@@ -26,17 +26,23 @@ def MainMenu():
         return oc
 
     html = HTML.ElementFromURL(SHOWS)
+
     for item in html.xpath('//section[@class="moduleBody"]/article'):
+
         title = item.xpath('.//a/@title')[0]
+
+        if title.lower() in ['abc family movies']:
+            continue
+
         url = item.xpath('.//a/@href')
         thumb_data = item.xpath('.//img/@data-properties')[0]
-        thumb_id = JSON.ObjectFromString(thumb_data)["image"]["src"]
-        thumb = IMG_BASE %thumb_id
+        thumb_id = JSON.ObjectFromString(thumb_data)['image']['src']
+        thumb = IMG_BASE % thumb_id
 
         oc.add(DirectoryObject(
             key = Callback(Episodes, url=url, title=title),
             title = title,
-            thumb = Resource.ContentsOfURLWithFallback(url=thumb)
+            thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback=ICON)
         ))
 
     if len(oc) < 1:
@@ -54,11 +60,12 @@ def Episodes(url, title):
 
     # Locked videos have lockedEpisode in the article class, so only pulling unlocked videos
     for item in html.xpath('//div[@data-module="latest episodes"]//article[@class="item fep available"]'):
+
         url = item.xpath('.//h4/a/@href')[0]
         ep_title = item.xpath('.//h4/a//text()')[0]
         thumb_data = item.xpath('.//img/@data-properties')[0]
-        thumb_id = JSON.ObjectFromString(thumb_data)["image"]["src"]
-        thumb = IMG_BASE %thumb_id
+        thumb_id = JSON.ObjectFromString(thumb_data)['image']['src']
+        thumb = IMG_BASE % thumb_id
         ep_info = item.xpath('.//div/span[1]//text()')[0].strip()
         episode = ep_info.split()[1].split('E')[1].strip()
         season = ep_info.split('S')[1].split()[0].strip()
@@ -70,12 +77,11 @@ def Episodes(url, title):
             show = title,
             season = int(season),
             index = int(episode),
-            thumb = Resource.ContentsOfURLWithFallback(url=thumb),
+            thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback=ICON),
             originally_available_at = originally_available_at
         ))
 
     if len(oc) < 1:
-        Log ('still no value for objects')
         return ObjectContainer(header="Empty", message="There are currently no unlocked videos available for this show." )
     else:
         return oc
