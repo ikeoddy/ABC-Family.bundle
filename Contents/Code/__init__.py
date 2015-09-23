@@ -2,15 +2,20 @@ NAME = "ABC Family"
 SHOWS = "http://abcfamily.go.com/shows"
 IMG_BASE = "http://cdn.static.abcfamily.com/service/image/ratio/id/%s/dim/320.16x9.jpg"
 
+ICON = R('icon-default.png')
+ART = R('art-default.jpg')
+
 ####################################################################################################
 def Start():
 
-	ObjectContainer.title1 = NAME
-	HTTP.CacheTime = CACHE_1HOUR
-	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:22.0) Gecko/20100101 Firefox/22.0'
+    ObjectContainer.title1 = NAME
+    ObjectContainer.art = R(ART)
+    DirectoryObject.thumb = R(ICON)
+    HTTP.CacheTime = CACHE_1HOUR
+    HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
 
 ####################################################################################################
-@handler('/video/abcfamily', NAME)
+@handler('/video/abcfamily', NAME, thumb=ICON, art=ART)
 def MainMenu():
 
     oc = ObjectContainer()
